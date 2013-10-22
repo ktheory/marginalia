@@ -39,8 +39,28 @@ module Marginalia
         @controller.controller_name if @controller.respond_to? :controller_name
       end
 
+      # Namespaced controller. Admin::UsersController => admin/users
+      def self.controller_path
+        @controller.controller_path if @controller.respond_to? :controller_path
+      end
+
       def self.action
-        @controller.action_name if @controller.respond_to? :action_name 
+        @controller.action_name if @controller.respond_to? :action_name
+      end
+
+      # ActionDispatch request identifier
+      def self.uuid
+        @controller.request.try(:uuid) if @controller.respond_to? :request
+      end
+
+      # Terse controller path, action, and uuid. E.g.
+      #   admin/users#show:a6a3f74880dc66dcc788d6075c8ea8a2
+      def self.source
+        if @controller
+          "#{controller_path}##{action}:#{uuid}"
+        else
+          'unknown request'
+        end
       end
 
       def self.line
